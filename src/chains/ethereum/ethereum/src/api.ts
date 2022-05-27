@@ -31,10 +31,7 @@ import {
   PromiEvent,
   Api,
   keccak,
-  RPCQUANTITY_ZERO,
-  RPCQUANTITY_EMPTY,
   JsonRpcErrorCode,
-  RPCQUANTITY_GWEI
 } from "@ganache/utils";
 import Blockchain from "./blockchain";
 import { EthereumInternalOptions } from "@ganache/ethereum-options";
@@ -63,8 +60,8 @@ async function autofillDefaultTransactionValues(
 ) {
   if (tx.gas.isNull()) {
     const defaultLimit = options.miner.defaultTransactionGasLimit;
-    if (defaultLimit === RPCQUANTITY_EMPTY) {
-      // if the default limit is `RPCQUANTITY_EMPTY` use a gas estimate
+    if (defaultLimit === Quantity.Empty) {
+      // if the default limit is `Quantity.Empty` use a gas estimate
       tx.gas = await eth_estimateGas(transaction, Tag.latest);
     } else {
       tx.gas = defaultLimit;
@@ -874,7 +871,7 @@ export default class EthereumApi implements Api {
    */
   @assertArgLength(0)
   async net_peerCount() {
-    return RPCQUANTITY_ZERO;
+    return Quantity.Zero;
   }
   //#endregion
 
@@ -1310,7 +1307,7 @@ export default class EthereumApi implements Api {
    */
   @assertArgLength(1)
   async eth_getUncleCountByBlockHash(hash: DATA) {
-    return RPCQUANTITY_ZERO;
+    return Quantity.Zero;
   }
 
   /**
@@ -1498,7 +1495,7 @@ export default class EthereumApi implements Api {
    */
   @assertArgLength(0)
   async eth_hashrate() {
-    return RPCQUANTITY_ZERO;
+    return Quantity.Zero;
   }
 
   /**
@@ -1526,7 +1523,7 @@ export default class EthereumApi implements Api {
    */
   @assertArgLength(0)
   async eth_maxPriorityFeePerGas() {
-    return RPCQUANTITY_GWEI;
+    return Quantity.Gwei;
   }
 
   /**
