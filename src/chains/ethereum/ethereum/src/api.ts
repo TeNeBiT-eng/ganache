@@ -1322,7 +1322,7 @@ export default class EthereumApi implements Api {
    */
   @assertArgLength(1)
   async eth_getUncleCountByBlockNumber(blockNumber: QUANTITY | Ethereum.Tag) {
-    return RPCQUANTITY_ZERO;
+    return Quantity.Zero;
   }
 
   /**
