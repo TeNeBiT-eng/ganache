@@ -157,7 +157,7 @@ describe("json-rpc-quantity", () => {
     "-0x1",
   ];
 
-  describe.only("add()", () => {
+  describe("add()", () => {
     it("should return the correct sum when adding a number", () => {
       fc.assert(fc.property(fc.bigUint(), fc.integer(), (qValue, addendValue) => {
         const addend = Math.abs(addendValue);
@@ -201,6 +201,24 @@ describe("json-rpc-quantity", () => {
       }));
     });
 
+    it(`should add a value to null`, () => {
+      fc.assert(fc.property(fc.integer(), (addendValue) => {
+        const addend = Math.abs(addendValue);
+        const quantity = new Quantity(null);
+        const result = quantity.add(addend);
+        assert.equal(result.toNumber(), addend, `Incorrect sum adding ${addend} to a null Quantity. Expecting ${addend}, got ${result.toNumber()}.`);
+      }));
+    });
+
+    it(`should add null`, () => {
+      fc.assert(fc.property(fc.integer(), (qValue) => {
+        const addend = null;
+        const quantity = new Quantity(Math.abs(qValue));
+        const result = quantity.add(addend);
+        assert.equal(result.toNumber(), Math.abs(qValue), `Incorrect sum adding null to a ${quantity}. Expecting ${quantity}, got ${result}.`);
+      }));
+    });
+
     it("should return a new Quantity instance", () => {
       const quantity = new Quantity(1);
       const sum = quantity.add(1);
@@ -225,7 +243,7 @@ describe("json-rpc-quantity", () => {
     });
   });
 
-  describe.only("multiply()", () => {
+  describe("multiply()", () => {
     it("should return the correct product when multiplying by a number", () => {
       fc.assert(fc.property(fc.bigUint(), fc.integer(), (qValue, multiplierValue) => {
         const multiplier = Math.abs(multiplierValue);
