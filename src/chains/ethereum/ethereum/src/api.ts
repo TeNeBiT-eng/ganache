@@ -1060,6 +1060,45 @@ export default class EthereumApi implements Api {
     return block ? block.toJSON<IncludeTransactions>(transactions) : null;
   }
 
+  async eth_getProof(
+    address: string,
+    slots: string[],
+    blockNumber: QUANTITY | Ethereum.Tag
+  ) {
+    const blockchain = this.#blockchain;
+    const parentBlock = await blockchain.blocks.get(blockNumber);
+    const stateTrie = this.#blockchain.trie.copy(false);
+    stateTrie.setContext(
+      parentBlock.header.stateRoot.toBuffer(),
+      null,
+      parentBlock.header.number
+    );
+
+    const common = this.#blockchain.fallback
+      ? this.#blockchain.fallback.getCommonForBlockNumber(
+          this.#blockchain.common,
+          BigInt(parentBlock.header.number.toString())
+        )
+      : this.#blockchain.common;
+
+    const vm = await this.#blockchain.createVmFromStateTrie(
+      stateTrie,
+      this.#options.chain.allowUnlimitedContractSize,
+      false, // precompiles have already been initialized in the stateTrie
+      common
+    );
+
+    const buf = Address.from(address).toBuffer();
+    const addy = {
+      equals: (a: { buf: Buffer }) => buf.equals(a.buf),
+      buf: buf
+    } as any;
+    return await vm.stateManager.getProof(
+      addy,
+      slots.map(slotHex => Data.from(slotHex, 32).toBuffer())
+    );
+  }
+
   /**
    * Returns information about a block by block hash.
    * @param hash - Hash of a block.
